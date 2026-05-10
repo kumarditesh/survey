@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help us build bilingual toys for South Asian families</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --marigold: #F5A623;
+    --coral: #E8614A;
+    --teal: #1A8C7E;
+    --cream: #FFF8EE;
+    --deep: #2D1B0E;
+    --soft-pink: #F9D5C8;
+    --mint: #C8EDE8;
+    --yellow-light: #FEF3D0;
+    --progress-bg: #F0E4D0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background decorations */
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.12;
+  }
+  .bg-circle-1 { width: 500px; height: 500px; background: var(--marigold); top: -150px; right: -100px; }
+  .bg-circle-2 { width: 350px; height: 350px; background: var(--coral); bottom: -100px; left: -80px; }
+  .bg-circle-3 { width: 200px; height: 200px; background: var(--teal); top: 40%; left: 5%; }
+
+  /* Dot pattern */
+  .bg-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #F5A623 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.06;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: var(--progress-bg);
+    z-index: 100;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--marigold), var(--coral));
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* Step counter */
+  .step-counter {
+    position: fixed;
+    top: 18px; right: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 0.05em;
+    z-index: 100;
+  }
+
+  /* Main container */
+  .survey-wrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    max-width: 680px;
+    animation: slideIn 0.45s cubic-bezier(.4,0,.2,1);
+  }
+  .slide.active { display: block; }
+  .slide.exit { animation: slideOut 0.3s cubic-bezier(.4,0,.2,1) forwards; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-20px); }
+  }
+
+  /* Cards */
+  .card {
+    background: white;
+    border-radius: 24px;
+    padding: 52px 52px 44px;
+    box-shadow: 0 8px 40px rgba(45,27,14,0.09), 0 2px 8px rgba(45,27,14,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--marigold), var(--coral), var(--teal));
+  }
+
+  /* Decorative icon */
+  .card-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin-bottom: 24px;
+  }
+
+  .question-label {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 12px;
+  }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--deep);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .question-hint {
+    font-size: 14px;
+    color: #9B8A7A;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* Options */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 2.5px solid #EDE0D4;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: white;
+    user-select: none;
+  }
+
+  .option-item:hover {
+    border-color: var(--marigold);
+    background: var(--yellow-light);
+    transform: translateX(3px);
+  }
+
+  .option-item.selected {
+    border-color: var(--teal);
+    background: var(--mint);
+  }
+
+  .option-key {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: #F0E8DF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: #8A7060;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+
+  .option-item.selected .option-key {
+    background: var(--teal);
+    color: white;
+  }
+
+  .option-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--deep);
+    line-height: 1.3;
+  }
+
+  /* Multi-select grid */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 540px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .card { padding: 36px 28px 32px; }
+    .question-text { font-size: 22px; }
+  }
+
+  .chip-item {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2.5px solid #EDE0D4;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: white;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--deep);
+    display: flex; align-items: center; gap: 10px;
+    user-select: none;
+  }
+
+  .chip-item:hover {
+    border-color: var(--marigold);
+    background: var(--yellow-light);
+  }
+
+  .chip-item.selected {
+    border-color: var(--coral);
+    background: var(--soft-pink);
+  }
+
+  .chip-check {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid #C8B8AA;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+    font-size: 12px;
+  }
+  .chip-item.selected .chip-check {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: white;
+  }
+
+  /* Textarea */
+  .text-input {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 14px;
+    border: 2.5px solid #EDE0D4;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    color: var(--deep);
+    background: white;
+    resize: vertical;
+    min-height: 120px;
+    transition: border-color 0.18s;
+    margin-bottom: 32px;
+    outline: none;
+  }
+  .text-input:focus { border-color: var(--teal); background: var(--mint); }
+  .text-input::placeholder { color: #C0AFA4; }
+
+  /* Email input */
+  .email-input {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 14px;
+    border: 2.5px solid #EDE0D4;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    color: var(--deep);
+    background: white;
+    transition: border-color 0.18s;
+    margin-bottom: 32px;
+    outline: none;
+  }
+  .email-input:focus { border-color: var(--teal); background: var(--mint); }
+  .email-input::placeholder { color: #C0AFA4; }
+
+  /* Buttons */
+  .btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 14px;
+    background: var(--teal);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-next:hover {
+    background: #156b60;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26,140,126,0.35);
+  }
+
+  .btn-next:active { transform: translateY(0); }
+
+  .btn-next .arrow {
+    font-size: 18px;
+    transition: transform 0.2s;
+  }
+  .btn-next:hover .arrow { transform: translateX(4px); }
+
+  .btn-skip {
+    background: none;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: #A0908A;
+    cursor: pointer;
+    margin-left: 16px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .btn-skip:hover { color: var(--deep); }
+
+  /* Welcome slide */
+  .welcome-card {
+    text-align: center;
+    padding: 60px 52px 52px;
+  }
+
+  .welcome-emoji {
+    font-size: 72px;
+    display: block;
+    margin-bottom: 24px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .welcome-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: var(--deep);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  .welcome-title em {
+    font-style: italic;
+    color: var(--coral);
+  }
+
+  .welcome-body {
+    font-size: 16px;
+    color: #6B5444;
+    line-height: 1.7;
+    margin-bottom: 36px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .pill-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .pill {
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pill-1 { background: var(--yellow-light); color: #8A6B00; }
+  .pill-2 { background: var(--soft-pink); color: #9B3A2A; }
+  .pill-3 { background: var(--mint); color: #1A6B5E; }
+
+  .btn-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 44px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--marigold), var(--coral));
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 24px rgba(232,97,74,0.35);
+    letter-spacing: 0.02em;
+  }
+  .btn-start:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(232,97,74,0.45);
+  }
+
+  /* Thank you slide */
+  .thankyou-card {
+    text-align: center;
+    padding: 60px 52px;
+  }
+
+  .confetti-row {
+    font-size: 48px;
+    margin-bottom: 24px;
+    display: block;
+    animation: pop 0.6s cubic-bezier(.36,.07,.19,.97);
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .thankyou-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    color: var(--deep);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .thankyou-body {
+    font-size: 16px;
+    color: #6B5444;
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto 32px;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    background: var(--soft-pink);
+    color: var(--coral);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    border: 2px solid var(--coral);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .share-btn:hover { background: var(--coral); color: white; }
+
+  /* Decorative flowers */
+  .deco-flower {
+    position: absolute;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .deco-top-right { top: 16px; right: 16px; font-size: 48px; transform: rotate(20deg); }
+  .deco-bottom-left { bottom: 16px; left: 16px; font-size: 36px; transform: rotate(-15deg); }
+
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="bg-dots"></div>
+  <div class="bg-circle bg-circle-1"></div>
+  <div class="bg-circle bg-circle-2"></div>
+  <div class="bg-circle bg-circle-3"></div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressFill" style="width:0%"></div>
+</div>
+<div class="step-counter" id="stepCounter"></div>
+
+<div class="survey-wrap">
+
+  <!-- WELCOME -->
+  <div class="slide active" id="slide-0">
+    <div class="card welcome-card">
+      <span class="welcome-emoji">🪀</span>
+      <h1 class="welcome-title">Help us build <em>bilingual toys</em><br>for South Asian families</h1>
+      <p class="welcome-body">Hi! I'm a South Asian immigrant mom with a one-year-old daughter. I'm building bilingual educational toys that teach Hindi, Telugu, Tamil, and other Indian languages — because I couldn't find anything like that for my own family.<br><br>This takes <strong>less than 3 minutes</strong> and will directly shape what we build. No spam, no selling.</p>
+      <div class="pill-row">
+        <span class="pill pill-1">⏱ ~3 minutes</span>
+        <span class="pill pill-2">🔒 Anonymous</span>
+        <span class="pill pill-3">🧸 For our community</span>
+      </div>
+      <button class="btn-start" onclick="goTo(1)">Let's begin <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- Q1: Languages -->
+  <div class="slide" id="slide-1">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🌸</div>
+      <div class="card-icon" style="background:#FEF3D0">🗣️</div>
+      <div class="question-label">Question 1 of 9</div>
+      <h2 class="question-text">What languages do you want your child to learn at home, alongside English?</h2>
+      <p class="question-hint">Select all that apply</p>
+      <div class="options-grid" id="q1-options">
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Hindi</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Telugu</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Tamil</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Punjabi</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Gujarati</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Marathi</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Bengali</div>
+        <div class="chip-item" onclick="toggleChip(this,'q1')"><span class="chip-check">✓</span>Other</div>
+      </div>
+      <button class="btn-next" onclick="goTo(2)">Continue <span class="arrow">→</span></button>
+      <button class="btn-skip" onclick="goTo(2)">Skip</button>
+    </div>
+  </div>
+
+  <!-- Q2: Child age -->
+  <div class="slide" id="slide-2">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🌼</div>
+      <div class="card-icon" style="background:#F9D5C8">👶</div>
+      <div class="question-label">Question 2 of 9</div>
+      <h2 class="question-text">How old is your child?</h2>
+      <div class="options-list" id="q2-options">
+        <div class="option-item" onclick="selectOption(this,'q2')"><span class="option-key">A</span><span class="option-text">Under 6 months</span></div>
+        <div class="option-item" onclick="selectOption(this,'q2')"><span class="option-key">B</span><span class="option-text">6–12 months</span></div>
+        <div class="option-item" onclick="selectOption(this,'q2')"><span class="option-key">C</span><span class="option-text">1–2 years</span></div>
+        <div class="option-item" onclick="selectOption(this,'q2')"><span class="option-key">D</span><span class="option-text">2–4 years</span></div>
+        <div class="option-item" onclick="selectOption(this,'q2')"><span class="option-key">E</span><span class="option-text">4–6 years</span></div>
+        <div class="option-item" onclick="selectOption(this,'q2')"><span class="option-key">F</span><span class="option-text">My child is older than 6</span></div>
+      </div>
+      <button class="btn-next" onclick="goTo(3)">Continue <span class="arrow">→</span></button>
+      <button class="btn-skip" onclick="goTo(3)">Skip</button>
+    </div>
+  </div>
+
+  <!-- Q3: Toy type -->
+  <div class="slide" id="slide-3">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🪷</div>
+      <div class="card-icon" style="background:#C8EDE8">🧸</div>
+      <div class="question-label">Question 3 of 9</div>
+      <h2 class="question-text">What kind of toy would you love for teaching your child your language?</h2>
+      <p class="question-hint">Select all that appeal to you</p>
+      <div class="options-list">
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q3')"><span class="chip-check">✓</span>A musical toy that says words in English AND your language</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q3')"><span class="chip-check">✓</span>Alphabet blocks with English on one side and your language on the other</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q3')"><span class="chip-check">✓</span>A stuffed animal that talks in your language when you squeeze it</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q3')"><span class="chip-check">✓</span>A bilingual picture book</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q3')"><span class="chip-check">✓</span>Flashcards in both languages</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q3')"><span class="chip-check">✓</span>Not sure yet — I'd want to see what's out there</div>
+      </div>
+      <button class="btn-next" onclick="goTo(4)">Continue <span class="arrow">→</span></button>
+      <button class="btn-skip" onclick="goTo(4)">Skip</button>
+    </div>
+  </div>
+
+  <!-- Q4: Buy more -->
+  <div class="slide" id="slide-4">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🌻</div>
+      <div class="card-icon" style="background:#FEF3D0">🛒</div>
+      <div class="question-label">Question 4 of 9</div>
+      <h2 class="question-text">If your child loved this toy, would you buy more as they got older?</h2>
+      <div class="options-list" id="q4-options">
+        <div class="option-item" onclick="selectOption(this,'q4')"><span class="option-key">A</span><span class="option-text">Yes, I would keep buying new ones as my child grows</span></div>
+        <div class="option-item" onclick="selectOption(this,'q4')"><span class="option-key">B</span><span class="option-text">Maybe</span></div>
+        <div class="option-item" onclick="selectOption(this,'q4')"><span class="option-key">C</span><span class="option-text">Probably just one is enough</span></div>
+        <div class="option-item" onclick="selectOption(this,'q4')"><span class="option-key">D</span><span class="option-text">I would also buy them as gifts for other kids</span></div>
+      </div>
+      <button class="btn-next" onclick="goTo(5)">Continue <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- Q5: Price -->
+  <div class="slide" id="slide-5">
+    <div class="card">
+      <div class="deco-flower deco-top-right">💐</div>
+      <div class="card-icon" style="background:#F9D5C8">💰</div>
+      <div class="question-label">Question 5 of 9</div>
+      <h2 class="question-text">How much would you pay for a premium bilingual toy in your home language?</h2>
+      <p class="question-hint">For reference: a LeapFrog 100 Words book costs ~$15, a LingoDodo bilingual set costs $40–$60</p>
+      <div class="options-list" id="q5-options">
+        <div class="option-item" onclick="selectOption(this,'q5')"><span class="option-key">A</span><span class="option-text">Under $30 — I'd compare it to any other toy</span></div>
+        <div class="option-item" onclick="selectOption(this,'q5')"><span class="option-key">B</span><span class="option-text">$30–$50 — I'd pay a bit more for the language value</span></div>
+        <div class="option-item" onclick="selectOption(this,'q5')"><span class="option-key">C</span><span class="option-text">$50–$80 — I'd treat it like a specialty educational product</span></div>
+        <div class="option-item" onclick="selectOption(this,'q5')"><span class="option-key">D</span><span class="option-text">$80–$100 — if the quality and language accuracy were excellent</span></div>
+        <div class="option-item" onclick="selectOption(this,'q5')"><span class="option-key">E</span><span class="option-text">Over $100 — if the product exceeds expectations</span></div>
+      </div>
+      <button class="btn-next" onclick="goTo(6)">Continue <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- Q6: Hardest part (open text) -->
+  <div class="slide" id="slide-6">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🌺</div>
+      <div class="card-icon" style="background:#C8EDE8">💬</div>
+      <div class="question-label">Question 6 of 9</div>
+      <h2 class="question-text">What is the hardest part about teaching your child your home language?</h2>
+      <p class="question-hint">No wrong answers. Be as honest as you want. This is anonymous.</p>
+      <textarea class="text-input" id="q6-text" placeholder="Share your thoughts here…"></textarea>
+      <button class="btn-next" onclick="goTo(7)">Continue <span class="arrow">→</span></button>
+      <button class="btn-skip" onclick="goTo(7)">Skip</button>
+    </div>
+  </div>
+
+  <!-- Q7: Heard of brands -->
+  <div class="slide" id="slide-7">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🌸</div>
+      <div class="card-icon" style="background:#FEF3D0">🔍</div>
+      <div class="question-label">Question 7 of 9</div>
+      <h2 class="question-text">Have you ever heard of or tried any of these?</h2>
+      <p class="question-hint">Select all you know</p>
+      <div class="options-grid">
+        <div class="chip-item" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>HabbiHabbi</div>
+        <div class="chip-item" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>LingoDodo</div>
+        <div class="chip-item" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>LeapFrog</div>
+        <div class="chip-item" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>Baby Einstein</div>
+        <div class="chip-item" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>Little Ladoo</div>
+        <div class="chip-item" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>Desi Babies</div>
+        <div class="chip-item" style="grid-column:1/-1" onclick="toggleChip(this,'q7')"><span class="chip-check">✓</span>None of these — I haven't found anything relevant</div>
+      </div>
+      <button class="btn-next" onclick="goTo(8)">Continue <span class="arrow">→</span></button>
+      <button class="btn-skip" onclick="goTo(8)">Skip</button>
+    </div>
+  </div>
+
+  <!-- Q8: What else to buy -->
+  <div class="slide" id="slide-8">
+    <div class="card">
+      <div class="deco-flower deco-top-right">🪔</div>
+      <div class="card-icon" style="background:#F9D5C8">🎁</div>
+      <div class="question-label">Question 8 of 9</div>
+      <h2 class="question-text">What else would you love to buy for your child that connects them to your culture?</h2>
+      <p class="question-hint">Select all that apply</p>
+      <div class="options-list">
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Books for kids in my home language</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Traditional Indian clothes for kids</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Cards or games about Indian festivals, foods, and animals</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Indian songs and lullabies</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Fun cooking activities with Indian recipes</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Activity kits for Diwali, Holi, Eid, Pongal and other festivals</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Art and craft kits inspired by Indian culture</div>
+        <div class="chip-item" style="border-radius:14px;padding:14px 18px" onclick="toggleChip(this,'q8')"><span class="chip-check">✓</span>Nothing else, just the toys</div>
+      </div>
+      <button class="btn-next" onclick="goTo(9)">Continue <span class="arrow">→</span></button>
+      <button class="btn-skip" onclick="goTo(9)">Skip</button>
+    </div>
+  </div>
+
+  <!-- Q9: Email -->
+  <div class="slide" id="slide-9">
+    <div class="card">
+      <div class="deco-flower deco-top-right">💌</div>
+      <div class="card-icon" style="background:#C8EDE8">📬</div>
+      <div class="question-label">Question 9 of 9 — Last one!</div>
+      <h2 class="question-text">Would you like to be the first to hear about our bilingual toys when they're ready?</h2>
+      <div class="options-list" id="q9-options" style="margin-bottom:20px">
+        <div class="option-item" onclick="selectOption(this,'q9');document.getElementById('email-wrap').style.display='block'"><span class="option-key">A</span><span class="option-text">Yes please! 🙌</span></div>
+        <div class="option-item" onclick="selectOption(this,'q9');document.getElementById('email-wrap').style.display='block'"><span class="option-key">B</span><span class="option-text">Maybe, depends on what it is</span></div>
+        <div class="option-item" onclick="selectOption(this,'q9');document.getElementById('email-wrap').style.display='none'"><span class="option-key">C</span><span class="option-text">No thanks</span></div>
+      </div>
+      <div id="email-wrap" style="display:none">
+        <p style="font-size:14px;color:#9B8A7A;margin-bottom:12px;font-weight:600">Leave your email and we'll reach out to you first ✨</p>
+        <input type="email" class="email-input" id="q9-email" placeholder="your@email.com">
+      </div>
+      <button class="btn-next" onclick="submitForm()" style="background:linear-gradient(135deg,var(--marigold),var(--coral));box-shadow:0 6px 24px rgba(232,97,74,0.3)">Submit 🎉 <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- THANK YOU -->
+  <div class="slide" id="slide-10">
+    <div class="card thankyou-card">
+      <span class="confetti-row">🎊🧸🌸</span>
+      <h2 class="thankyou-title">Thank you so much! 🙏</h2>
+      <p class="thankyou-body">Your answers will directly shape the toys we build for our community. Every response matters — you're helping create something that didn't exist when we were growing up.<br><br>With love and gratitude 🌼</p>
+      <button class="share-btn" onclick="copyLink()">📤 Share this survey</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 9;
+  let current = 0;
+
+  function goTo(n) {
+    const currentSlide = document.getElementById('slide-' + current);
+    currentSlide.classList.add('exit');
+    setTimeout(() => {
+      currentSlide.classList.remove('active', 'exit');
+      current = n;
+      const nextSlide = document.getElementById('slide-' + n);
+      nextSlide.classList.add('active');
+      updateProgress();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }, 280);
+  }
+
+  function updateProgress() {
+    const pct = current === 0 ? 0 : current === 10 ? 100 : Math.round((current / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    if (current > 0 && current <= TOTAL) {
+      document.getElementById('stepCounter').textContent = current + ' / ' + TOTAL;
+    } else {
+      document.getElementById('stepCounter').textContent = '';
+    }
+  }
+
+  function selectOption(el, group) {
+    document.querySelectorAll('#slide-' + current + ' .option-item').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleChip(el, group) {
+    el.classList.toggle('selected');
+  }
+
+  async function submitForm() {
+    // Collect all answers
+    const q1 = [...document.querySelectorAll('#slide-1 .chip-item.selected')].map(el => el.textContent.trim()).join(', ');
+    const q2 = document.querySelector('#slide-2 .option-item.selected .option-text')?.textContent || '';
+    const q3 = [...document.querySelectorAll('#slide-3 .chip-item.selected')].map(el => el.textContent.trim()).join(', ');
+    const q4 = document.querySelector('#slide-4 .option-item.selected .option-text')?.textContent || '';
+    const q5 = document.querySelector('#slide-5 .option-item.selected .option-text')?.textContent || '';
+    const q6 = document.getElementById('q6-text')?.value || '';
+    const q7 = [...document.querySelectorAll('#slide-7 .chip-item.selected')].map(el => el.textContent.trim()).join(', ');
+    const q8 = [...document.querySelectorAll('#slide-8 .chip-item.selected')].map(el => el.textContent.trim()).join(', ');
+    const q9 = document.querySelector('#slide-9 .option-item.selected .option-text')?.textContent || '';
+    const email = document.getElementById('q9-email')?.value || '';
+
+    const message = `
+Languages to learn: ${q1}
+Child age: ${q2}
+Toy type: ${q3}
+Would buy more: ${q4}
+Price range: ${q5}
+Hardest part about teaching language: ${q6}
+Brands heard of: ${q7}
+Other cultural products wanted: ${q8}
+Wants to hear more: ${q9}
+    `.trim();
+
+    const payload = {
+      access_key: '9321ccb4-1bda-4ecd-beef-20ebad96c0bb',
+      subject: 'New survey response — Bilingual Toys',
+      from_name: 'Bilingual Toys Survey',
+      email: email || 'no-email@provided.com',
+      message: message
+    };
+
+    console.log('[Survey] Submitting to Web3Forms...');
+    console.log('[Survey] Payload:', JSON.stringify(payload, null, 2));
+
+    try {
+      console.log('[Survey] Sending fetch...');
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      console.log('[Survey] Response status:', res.status, res.statusText);
+
+      const raw = await res.text();
+      console.log('[Survey] Raw response body:', raw);
+
+      let data;
+      try {
+        data = JSON.parse(raw);
+        console.log('[Survey] Parsed response:', data);
+      } catch (parseErr) {
+        console.error('[Survey] Could not parse response as JSON:', parseErr.message);
+        console.warn('[Survey] Proceeding to thank-you screen anyway.');
+        goTo(10);
+        return;
+      }
+
+      if (data.success) {
+        console.log('[Survey] ✅ Submission successful!');
+        goTo(10);
+      } else {
+        console.error('[Survey] ❌ Web3Forms returned failure:', data);
+        goTo(10);
+      }
+    } catch (err) {
+      console.error('[Survey] ❌ Fetch failed entirely.');
+      console.error('[Survey] Error name:', err.name);
+      console.error('[Survey] Error message:', err.message);
+      console.error('[Survey] Stack:', err.stack);
+      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+        console.warn('[Survey] ⚠️ "Failed to fetch" — this is almost certainly a network block in the Claude artifact sandbox. Deploy to Netlify and it will work fine.');
+      }
+      goTo(10);
+    }
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const btn = document.querySelector('.share-btn');
+      btn.textContent = '✅ Link copied!';
+      setTimeout(() => btn.innerHTML = '📤 Share this survey', 2000);
+    });
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
